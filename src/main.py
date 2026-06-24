@@ -1,16 +1,17 @@
 import os
 import random
+
 import gradio as gr
 import pandas as pd
+
 
 def get_csv_files():
     csv_files = [f for f in os.listdir('./classroom') if f.endswith('.csv')]
     return csv_files
 
 def load_layout(layout_input, csv_layout_input: gr.Dropdown):
-    print(csv_layout_input.value)
-    layout_file = csv_layout_input.value
-    layout = pd.read_csv(f'./classroom/{layout_file}', header=None)
+    print(csv_layout_input)
+    layout = pd.read_csv(f'./classroom/{csv_layout_input}', header=None)
     layout_input.value = layout.values.tolist()
     return pd.DataFrame(layout.values.tolist())
 
@@ -43,7 +44,9 @@ if __name__ == '__main__':
         with gr.Row():
             with gr.Column():
                 gr.Markdown('## 輸入教室佈局')
-                layout_input = gr.Dataframe(headers=None, row_count=10, col_count=10, datatype='str', value=default_layout)
+                rows = default_layout.__len__()
+                cols = default_layout[0].__len__()
+                layout_input = gr.Dataframe(headers=None, row_count=rows, col_count=cols, datatype='str', value=default_layout)
                 csv_layout_input = gr.Dropdown(choices=csv_files, label='選擇內建教室佈局')
                 csv_layout_input.change(load_layout, inputs=[layout_input, csv_layout_input], outputs=[layout_input])
             with gr.Column():
